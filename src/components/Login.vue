@@ -32,7 +32,10 @@
               </v-btn>              
             </form>
 
-            <v-btn to="/signup">Sign Up</v-btn>
+            <v-btn
+              color="success">
+              Sign Up
+            </v-btn>
 
             <v-progress-linear 
               v-show="loading" 
