@@ -15,6 +15,7 @@ module.exports = function(pgPool) {
             }
 
             return userModel.insert(req, res, function(sqlRes) {
+                console.log(sqlRes);
                 if(sqlRes.name === "error") {                    
                     return res.status(500).json({ error: true, message: sqlRes.detail });
                 } else {

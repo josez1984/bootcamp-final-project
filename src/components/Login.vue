@@ -31,11 +31,20 @@
                 Log in
               </v-btn>              
             </form>
-
-            <v-btn
-              color="success">
-              Sign Up
-            </v-btn>
+            
+            <v-list>
+              <v-list-tile                
+                :to="this.signupLink.link">
+                <v-list-tile-action>
+                  <v-icon>{{ this.signupLink.icon }}</v-icon>
+                </v-list-tile-action>
+                <v-badge color="red" v-if="this.signupLink.badge">
+                  <span slot="badge">{{ this.signupLink.badge }}</span>
+                  <span>{{ this.signupLink.title }}</span>
+                </v-badge>
+                <v-list-tile-content v-else>{{ this.signupLink.title }}</v-list-tile-content>
+              </v-list-tile>
+            </v-list>
 
             <v-progress-linear 
               v-show="loading" 
@@ -63,8 +72,12 @@
 <script>
   import { validationMixin } from 'vuelidate'
   import { required, maxLength, email } from 'vuelidate/lib/validators'
+  import Signup from './Signup';
 
   export default {
+    components: {
+      Signup
+    },
     mixins: [validationMixin],
 
     validations: {
@@ -77,8 +90,13 @@
         }
       }
     },
-
+    
     data: () => ({
+      signupLink: {
+        icon: 'dashboard', 
+        title: 'Sign Up', 
+        link: '/signup'
+      },
       email: '',
       password: '',
       loading: false,      
