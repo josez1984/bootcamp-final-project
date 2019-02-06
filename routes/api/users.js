@@ -4,6 +4,10 @@ module.exports = function(app, pgPool) {
     var auth = require("../../middleware/auth.js")(pgPool);
     const user = require("../../controllers/user.js")(pgPool);    
 
+    app.post("/api/signup", (httpReq, httpRes)=>{
+      return user.create(httpReq, httpRes);
+    });
+
     app.post("/api/login", (httpReq, httpRes)=>{
       return user.login(httpReq, httpRes);
     });

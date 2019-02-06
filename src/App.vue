@@ -10,7 +10,7 @@
         width=240>
           <NavDrawerContent 
             :appName="appName"
-            :welcomeAlert="welcome"/>
+            :welcomeAlert="welcome"/>                
       </v-navigation-drawer>
       
       <!-- App Right Nav Drawer -->
@@ -68,7 +68,7 @@
       
       <!-- App Footer -->
       <v-footer color="blue-grey" class="white--text" app>
-        <span>Trademe</span>
+        <span>TradeMe</span>
         <v-spacer></v-spacer>
         <span>&copy; 2017</span>
       </v-footer>
@@ -90,9 +90,14 @@ export default {
   props: {
     source: String
   },
-  data: () => ({    
+  data: () => ({  
+    signupLink: {
+        icon: 'dashboard', 
+        title: 'Sign Up', 
+        link: '/signup'
+      },  
     nNotifications: 5,
-    appName: "Trademe",
+    appName: "TradeMe",
     drawer: null,
     drawerRight: null,
     currentPage: '',

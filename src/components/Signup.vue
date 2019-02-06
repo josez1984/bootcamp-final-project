@@ -6,7 +6,7 @@
           </v-card-title>
 
           <v-card-text>
-            <form @submit.prevent="login">
+            <form @submit.prevent="signup">
               <v-text-field
                 v-model="email"
                 :error-messages="emailErrors"
@@ -25,7 +25,7 @@
               </v-text-field>
 
               <v-text-field
-                v-model="password"
+                v-model="passwordConfirm"
                 label="Confirm Password"
                 type="password"
                 required>
@@ -77,6 +77,7 @@
     data: () => ({
       email: '',
       password: '',
+      passwordConfirm: '',
       loading: false,      
       alert: {
         show: false,
@@ -96,26 +97,35 @@
     },
 
     methods: {
-      login() {
+      signup() {
+        this.hideError()
         this.loading = true
         let email = this.email
         let password = this.password
-        this.$store.dispatch('auth/login', {
+        let passwordConfirm = this.passwordConfirm
+        if(password !== passwordConfirm) {
+          this.loading = false;
+          return this.showErrorMessage('The passwords must match')
+        }
+        this.$store.dispatch('auth/signup', {
           email,
-          password
+          password          
         }).then((resp)=>{          
           this.alert.show = false          
           this.loading = false                    
           this.email = ''
           this.password = ''
+          this.passwordConfirm = ''
           this.$router.push('/dashboard')
-        }).catch((err)=>{     
-          this.showErrorMessage('There was an error Login in.')               
-          // this.alert.show = true
-          // this.alert.text = 'There was an error login in.'
-          // this.alert.type = 'error'
+        }).catch((err)=>{   
+          console.log(err.message)  
+          let msg = err.message || 'There was an error signin up.';
+          this.showErrorMessage(msg)                        
           this.loading = false
         })
+      },
+      hideError() {
+        this.alert.show = false
       },
       showErrorMessage(text) {
         this.alert.show = true

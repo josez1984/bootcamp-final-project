@@ -10,6 +10,7 @@ import Profile from '@/components/Profile'
 import store from '../store';
 import ResetPassword from '@/components/ResetPassword'
 import PaymentMethods from '@/components/PaymentMethods'
+import Signup from '@/components/Signup';
 
 let router = new Router({
   routes: [
@@ -62,20 +63,24 @@ let router = new Router({
       meta: { 
         requiresAuth: true
       }
+    },
+    {
+      path: '/signup',
+      name: 'Sign Up',
+      component: Signup      
     }
   ]
 })
 
-router.beforeEach((to, from, next)=>{
-  if(to.matched.some(record => record.meta.requiresAuth)) {
-    console.log(store.getters['auth/userAuth'])
+router.beforeEach((to, from, next)=>{  
+  if(to.matched.some(record => record.meta.requiresAuth)) {    
     if(store.getters['auth/userAuth']) {
       next()
       return
     }
     next('/')
-  } else {
-    next()
+  } else {    
+    next()    
   }
 })
 

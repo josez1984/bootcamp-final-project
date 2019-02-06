@@ -29,7 +29,7 @@ Vue.use(VueAxios, axios)
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {  
-  if(to.name === 'Home') {
+  if(['Home','Sign Up'].indexOf(to.name) > -1) {
     next()
   } else if(localStorage.token) {
     next()
@@ -46,7 +46,7 @@ new Vue({
     App, 
     Navbar, 
     NavDrawerContent,
-    Login
+    Login    
   },
   template: '<App/>'
 })

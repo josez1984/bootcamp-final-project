@@ -26,6 +26,20 @@ const actions = {
       resolve()
     })
   },
+  signup({commit}, user){
+    return new Promise((resolve, reject)=>{
+      commit('request')      
+      axios.post(
+        '/api/signup',
+        user
+      ).then(resp => {
+        console.log(resp)
+        resolve(resp)
+      }).catch(err => {        
+        reject(err.response.data)
+      });
+    })
+  },
   login({commit}, user){
     return new Promise((resolve, reject)=>{
       commit('request')
