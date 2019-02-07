@@ -25,6 +25,7 @@ app.use(bodyParser.json());
 
 // require("./routes/htmlRoutes.js")(app, pgPool);
 require("./routes/api/users.js")(app, pgPool);
+require("./routes/api/items.js")(app, pgPool);
 
 app.listen(PORT, function() {
   console.log("App now listening at localhost:" + PORT);

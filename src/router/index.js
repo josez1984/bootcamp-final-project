@@ -11,6 +11,7 @@ import store from '../store';
 import ResetPassword from '@/components/ResetPassword'
 import PaymentMethods from '@/components/PaymentMethods'
 import Signup from '@/components/Signup';
+import Items from '@/components/Items';
 
 let router = new Router({
   routes: [
@@ -60,6 +61,14 @@ let router = new Router({
       path: '/payment-methods',
       name: 'Payment Methods',
       component: PaymentMethods,
+      meta: { 
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/items',
+      name: 'Items',
+      component: Items,
       meta: { 
         requiresAuth: true
       }
