@@ -15,8 +15,10 @@ app.use(cookieCreate);
 
 app.use(express.static("public"));
 app.use(express.static(__dirname + "/vue/dist"));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+app.use(bodyParser.json({limit: '100mb'}));
+
+var db = require("./models");
 
 // var exphbs = require("express-handlebars");
 
@@ -27,6 +29,8 @@ app.use(bodyParser.json());
 require("./routes/api/users.js")(app, pgPool);
 require("./routes/api/items.js")(app, pgPool);
 
-app.listen(PORT, function() {
-  console.log("App now listening at localhost:" + PORT);
+db.sequelize.sync().then(function() {
+  app.listen(PORT, function() {
+    console.log("App now listening at localhost:" + PORT);
+  });
 });

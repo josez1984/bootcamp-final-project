@@ -16,26 +16,23 @@
                 v-model="name"                
                 label="Name"
                 type="text"
+                ref="name"
                 required>
               </v-text-field>
               
               <v-textarea
                 solo
-                v-model="description"                
+                v-model="description"       
+                ref="description"         
                 label="Description">
               </v-textarea>              
 
               <v-select
                 :items="conditions"
+                ref="condition"
                 label="Condition">
               </v-select>
 
-              <!-- <v-btn
-                @click.prevent="addImage"
-                color="success">
-                  Add Image
-              </v-btn> -->
-              
               <v-btn
                 color="success"                
                 type="submit">
@@ -97,6 +94,10 @@ import PictureUpload from '@/components/PictureUpload'
     },
 
     methods: {      
+      postItem(e) {
+        console.log(e);
+        
+      },
       addImage() {
         this.showErrorMessage('This is an upcoming feature.')
       },

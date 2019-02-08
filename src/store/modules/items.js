@@ -33,10 +33,10 @@ const actions = {
       var reader = new FileReader();
       reader.readAsDataURL(payload);
       reader.onload = function () {      
-        let encoded = reader.result.replace(/^data:(.*;base64,)?/, '');
-        if ((encoded.length % 4) > 0) {
-          encoded += '='.repeat(4 - (encoded.length % 4));
-        }
+        let encoded = reader.result;
+        // if ((encoded.length % 4) > 0) {
+        //   encoded += '='.repeat(4 - (encoded.length % 4));
+        // }
         console.log(encoded);
         axios.post('/api/items/image', { image: encoded }).then(resp => {                
           commit('loading', false);        
