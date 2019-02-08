@@ -4,6 +4,7 @@ import cart from './modules/cart'
 import products from './modules/products'
 import auth from './modules/auth'
 import user from './modules/user'
+import items from './modules/items'
 
 // import createLogger from '../../../src/plugins/logger'
 
@@ -16,7 +17,8 @@ export default new Vuex.Store({
     cart,
     products,
     auth,
-    user
+    user,
+    items
   }
   // strict: debug,
   // plugins: debug ? [createLogger()] : []

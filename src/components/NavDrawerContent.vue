@@ -79,6 +79,11 @@
           icon: 'dashboard', 
           title: 'Dashboard',  
           link: '/dashboard'
+        },
+        {
+          icon: 'dashboard',
+          title: 'Items',
+          link: '/items'
         }
       ]
     }),
