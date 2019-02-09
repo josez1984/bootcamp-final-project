@@ -13,13 +13,23 @@ const getters = {
 
 // actions
 const actions = {
-  getItems({commit}, payload){
+  post({commit}, payload){
+    return new Promise((resolve, reject)=>{
+      axios.post('/api/items', payload)
+      .then(res => {
+        resolve(res)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  },
+  get({commit}, payload){
     return new Promise((resolve, reject)=>{
       axios.get('/api/items', payload)
       .then(res => {
-
+        resolve(res)
       }).catch(err => { 
-
+        reject(err)
       })
     })
   },
@@ -57,8 +67,7 @@ const actions = {
 
 // mutations
 const mutations = {
-  loading(state,status){state.loading=status},
-  profile(state,data){state.user=data},
+  loading(state,status){state.loading=status},  
   error(state,status){state.error=status}
 }
 

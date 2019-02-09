@@ -8,6 +8,7 @@
           <v-card-text>
             <form @submit.prevent="postItem">
               <v-select
+                @change="itemSelect"
                 :items="items"
                 label="Existing Items">
               </v-select>
@@ -28,6 +29,7 @@
               </v-textarea>              
 
               <v-select
+                v-model="condition"
                 :items="conditions"
                 ref="condition"
                 label="Condition">
@@ -36,8 +38,14 @@
               <v-btn
                 color="success"                
                 type="submit">
-                  Update
+                  {{ btnPostText }}
               </v-btn>   
+              
+              <v-btn
+                color="success"
+                @click="newItem">
+                  New Item
+              </v-btn>  
 
               <PictureUpload></PictureUpload>           
             </form>
@@ -49,7 +57,7 @@
 
             <v-alert
               v-model="alert.show"
-              :type="alert.type"
+              
               dismissible
               transition="scale-transition">
                 {{ alert.text }}.
@@ -70,7 +78,9 @@ import PictureUpload from '@/components/PictureUpload'
       PictureUpload
     },   
     data: () => ({
+      btnPostText: 'Post',
       items: [],
+      condition: '',
       conditions: [
         'Never Opened',
         'Slightly Used',
@@ -79,6 +89,7 @@ import PictureUpload from '@/components/PictureUpload'
         'Heavily Used, Working',
         'Heavily Used, Not Working'
       ],
+      id: 0,
       name: '',
       description: '',
       loading: false,      
@@ -93,10 +104,48 @@ import PictureUpload from '@/components/PictureUpload'
       
     },
 
+    created () {
+      this.$store.dispatch('items/get')
+      .then(res => {
+        console.log(res)
+        this.state.items = res
+      }).catch(err => {
+        console.log(err)
+        // this.showErrorMessage("There was an error fetching 'Items'.")
+
+        // NEW ALERT LOGIC....
+        this.$store.dispatch('alert/new', {
+          text: "There was an error fetching 'Items'.",
+          autoClose: true
+        })
+      });      
+    },
+
     methods: {      
+      itemSelect(e) {
+        console.log(e)
+        
+      },
+      newItem() {
+        this.btnPostText = 'Create New Item'
+        // NEW ALERT LOGIC....
+        this.$store.dispatch('alert/new', {
+          text: "There was an error fetching 'Items'.",
+          autoClose: true,
+          type: 'error'
+        })
+      },
       postItem(e) {
         console.log(e);
-        
+        this.$store.dispatch('items/post', {
+          name: this.name,
+          description: this.description,
+          condition: this.condition
+        }).then(res => {
+          console.log(res)
+        }).catch(err => {
+          console.log(err)
+        });
       },
       addImage() {
         this.showErrorMessage('This is an upcoming feature.')
