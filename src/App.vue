@@ -49,22 +49,16 @@
       
       <!-- App Content -->
       <v-content>
-        <v-container            
-          fill-height>
+        <v-container fill-height>
           <v-layout row wrap align-center>
             <v-flex class="text-xs-center">
-              <router-view></router-view>
-              <v-alert
-                  v-model="alert.show"
-                  :type="alert.type"
-                  dismissible
-                  transition="scale-transition">
-                    {{ alert.text }}.
-              </v-alert>
+              <router-view></router-view>              
             </v-flex>
           </v-layout>
         </v-container>
       </v-content>
+
+      <Alert/>
       
       <!-- App Footer -->
       <v-footer color="blue-grey" class="white--text" app>
@@ -84,6 +78,7 @@
 <script>
 import NavDrawerContent from './components/NavDrawerContent'
 import SideDrawerContent from './components/SideDrawerContent'
+import Alert from './components/Alert'
 
 export default {
   name: 'App',
@@ -110,7 +105,8 @@ export default {
   }),
   components: {
     NavDrawerContent,
-    SideDrawerContent
+    SideDrawerContent,
+    Alert
   },
   created () {
     this.currentPage = this.$router.currentRoute.name

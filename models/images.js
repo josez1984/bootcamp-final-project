@@ -1,14 +1,14 @@
 module.exports = function(sequelize, DataTypes) {
-  var Item = sequelize.define("Items", {
-    name: {
+  var Images = sequelize.define("Images", {
+    url: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    description: {
+    userId: {
       type: DataTypes.TEXT,
       allowNull: false      
     },
-    condition: {
+    itemId: {
       type: DataTypes.TEXT,
       allowNull: false
     }
@@ -24,5 +24,5 @@ module.exports = function(sequelize, DataTypes) {
   //   });
   // };
 
-  return Item;
+  return Images;
 };

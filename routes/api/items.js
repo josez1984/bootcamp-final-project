@@ -9,9 +9,9 @@ cloudinary.config({
 
 module.exports = function(app) {      
     const items = require("../../controllers/items.js");    
-
+    console.log(items);
     app.post("/api/items", (httpReq, httpRes)=>{
-      return items.create(httpReq.body);
+      return items.create(httpReq, httpRes);
     });
 
     app.post("/api/items/image", (httpReq, httpRes)=>{

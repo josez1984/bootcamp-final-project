@@ -118,61 +118,64 @@
         this.uploadedFiles = [];
         this.uploadError = null;
       },
-      save(formData) {
-        console.log('FROM save(formData)')
-        console.log(formData)
-        // upload data to the server
-        this.currentStatus = STATUS_SAVING;
+      // save(formData) {
+      //   console.log('FROM save(formData)')
+      //   console.log(formData)
+      //   // upload data to the server
+      //   this.currentStatus = STATUS_SAVING;
 
-        // upload(formData)
-        //   .then(x => {
-        //     this.uploadedFiles = [].concat(x);
-        //     this.currentStatus = STATUS_SUCCESS;
-        //   })
-        //   .catch(err => {
-        //     this.uploadError = err.response;
-        //     this.currentStatus = STATUS_FAILED;
-        //   });
+      //   // upload(formData)
+      //   //   .then(x => {
+      //   //     this.uploadedFiles = [].concat(x);
+      //   //     this.currentStatus = STATUS_SUCCESS;
+      //   //   })
+      //   //   .catch(err => {
+      //   //     this.uploadError = err.response;
+      //   //     this.currentStatus = STATUS_FAILED;
+      //   //   });
 
-        this.loading = true
+      //   this.loading = true
         
-        this.$store.dispatch('items/postImage', formData)
-        .then((resp)=>{          
-          console.log(resp)
-          
-        }).catch((err)=>{     
-          console.log(err)
-        })
-      },
+      //   this.$store.dispatch('items/postImage', formData)
+      //   .then((resp)=>{          
+      //     console.log(resp)
+      //     this.currentStatus = STATUS_SUCCESS;          
+      //   }).catch((err)=>{     
+      //     console.log(err)
+      //     this.currentStatus = STATUS_FAILED;
+      //   })
+      // },
       fileChange(e){
         const file = e.target.files[0]
         console.log(file)
         this.$store.dispatch('items/postImage', file)
         .then((resp)=>{          
-          console.log(resp)          
+          console.log(resp)  
+          this.currentStatus = STATUS_SUCCESS;        
         }).catch((err)=>{     
           console.log(err)
+          this.currentStatus = STATUS_FAILED;
         })       
       },
-      filesChange(fieldName, fileList) {
-        console.log('FROM filesChange()')
-        console.log(fieldName)
-        // handle file changes
-        const formData = new FormData();
+      // filesChange(fieldName, fileList) {
+      //   console.log('FROM filesChange()')
+      //   console.log(fieldName)
+      //   // handle file changes
+      //   const formData = new FormData();
 
-        if (!fileList.length) return;
+      //   if (!fileList.length) return;
 
-        // append the files to FormData
-        Array
-          .from(Array(fileList.length).keys())
-          .map(x => {
-            formData.append(fieldName, fileList[x], fileList[x].name);
-          });
+      //   // append the files to FormData
+      //   Array
+      //     .from(Array(fileList.length).keys())
+      //     .map(x => {
+      //       formData.append(fieldName, fileList[x], fileList[x].name);
+      //     });
 
-        // save it
-        console.log(formData);
-        this.save(formData);
-      }
+      //   // save it
+      //   console.log(formData);
+      //   this.save(formData);
+      // }
     },
     mounted() {
       this.reset();
