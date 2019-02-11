@@ -125,24 +125,16 @@
         this.$store.dispatch('auth/login', {
           email,
           password
-        }).then((resp)=>{          
-          this.alert.show = false          
-          this.loading = false                    
+        }).then((resp)=>{                                       
+          this.loading = false            
+          this.Message(`Welcome ${email}`, 3000)        
           this.email = ''
           this.password = ''
           this.$router.push('/dashboard')
-        }).catch((err)=>{     
-          this.showErrorMessage('There was an error Login in.')               
-          // this.alert.show = true
-          // this.alert.text = 'There was an error login in.'
-          // this.alert.type = 'error'
+        }).catch((err)=>{              
+          this.Error('There was an error Login in.')                         
           this.loading = false
         })
-      },
-      showErrorMessage(text) {
-        this.alert.show = true
-        this.alert.text = text
-        this.alert.type = 'error'
       },
       submit () {
         this.$v.$touch()

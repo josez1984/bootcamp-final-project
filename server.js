@@ -19,7 +19,6 @@ app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(bodyParser.json({limit: '100mb'}));
 
 var db = require("./models");
-
 // var exphbs = require("express-handlebars");
 
 // app.engine("handlebars", exphbs({ defaultLayout: "main" }));
@@ -29,7 +28,7 @@ var db = require("./models");
 require("./routes/api/users.js")(app, pgPool);
 require("./routes/api/items.js")(app, pgPool);
 
-db.sequelize.sync().then(function() {
+db.sequelize.sync({force: false}).then(function() {
   app.listen(PORT, function() {
     console.log("App now listening at localhost:" + PORT);
   });

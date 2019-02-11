@@ -3,13 +3,15 @@ import axios from 'axios'
 // initial state
 const state = {
   currentPage: '',
-  sideNavList: []
+  sideNavList: [],
+  loading: false
 }
 
 // getters
 const getters = {
   page: state => state.currentPage,
-  sideNavList: state => state.sideNavList
+  sideNavList: state => state.sideNavList,
+  loading: state => state.loading
 }
 
 // actions
@@ -52,6 +54,9 @@ const actions = {
 
 // mutations
 const mutations = {
+  loading(state, value) {    
+    state.loading = value
+  },
   sideNavList(state, payload){
     state.sideNavList = payload
   },

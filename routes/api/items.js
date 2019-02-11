@@ -1,5 +1,7 @@
 var path = require("path");
 var cloudinary = require('cloudinary');
+var authFn = require("../../middleware/auth.js");
+const auth = authFn()
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,9 +10,17 @@ cloudinary.config({
 });
 
 module.exports = function(app) {      
-    const items = require("../../controllers/items.js");    
-    console.log(items);
-    app.post("/api/items", (httpReq, httpRes)=>{
+    const items = require("../../controllers/items.js");        
+
+    app.delete("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
+      return items.delete(httpReq, httpRes);
+    });
+
+    app.get("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
+      return items.fetch(httpReq,httpRes);
+    });
+
+    app.post("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
       return items.create(httpReq, httpRes);
     });
 

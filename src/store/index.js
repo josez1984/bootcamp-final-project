@@ -6,6 +6,8 @@ import auth from './modules/auth'
 import user from './modules/user'
 import items from './modules/items'
 import alert from './modules/alert'
+import snackBar from './modules/snackBar'
+import app from './modules/app'
 
 // import createLogger from '../../../src/plugins/logger'
 
@@ -15,12 +17,14 @@ const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
   modules: {
+    app,
     cart,
     products,
     auth,
     user,
     items,
-    alert
+    alert,
+    snackBar
   }
   // strict: debug,
   // plugins: debug ? [createLogger()] : []

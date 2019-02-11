@@ -10,7 +10,9 @@
               <v-select
                 @change="itemSelect"
                 :items="items"
-                label="Existing Items">
+                label="Existing Items"
+                item-text="name"
+                item-value="id">
               </v-select>
 
               <v-text-field
@@ -44,24 +46,22 @@
               <v-btn
                 color="success"
                 @click="newItem">
-                  New Item
+                  New
               </v-btn>  
+
+              <v-btn
+                color="success"
+                @click="removeItem">
+                  Remove
+              </v-btn>
 
               <PictureUpload></PictureUpload>           
             </form>
 
-            <v-progress-linear 
+            <!-- <v-progress-linear 
               v-show="loading" 
               :indeterminate="loading">
-            </v-progress-linear>
-
-            <v-alert
-              v-model="alert.show"
-              
-              dismissible
-              transition="scale-transition">
-                {{ alert.text }}.
-            </v-alert>
+            </v-progress-linear> -->
           </v-card-text>
 
         </v-card>
@@ -73,98 +73,108 @@
 <script>
 import PictureUpload from '@/components/PictureUpload'
 
-  export default {
-    components: {
-      PictureUpload
-    },   
-    data: () => ({
-      btnPostText: 'Post',
-      items: [],
-      condition: '',
-      conditions: [
-        'Never Opened',
-        'Slightly Used',
-        'Very Used',
-        'Cosmetic Wear',
-        'Heavily Used, Working',
-        'Heavily Used, Not Working'
-      ],
-      id: 0,
-      name: '',
-      description: '',
-      loading: false,      
-      alert: {
-        show: false,
-        text: '',
-        type: ''
-      }
-    }),
+export default {
+  components: {
+    PictureUpload
+  },   
+  data: () => ({
+    btnPostText: 'Post',  
+    condition: '',
+    items: [],
+    item: {},
+    conditions: [
+      'Never Opened',
+      'Barely Used',
+      'Slightly Used',
+      'Very Used',
+      'Cosmetic Wear',
+      'Heavily Used, Working',
+      'Heavily Used, Not Working'
+    ],
+    id: 0,
+    name: '',
+    description: '',
+    loading: false,      
+    alert: {
+      show: false,
+      text: '',
+      type: ''
+    }
+  }),
 
-    computed: {
-      
+  computed: {
+    
+  },
+
+  mounted () {
+    this.fetchItems()        
+  },
+
+  methods: {  
+    // ...mapMutations(["snackBar/showSnackBar", "snackbar/closeSnackBar"]),    
+    itemSelect(id) {    
+      const item = this.items.find(el=>el.id === id)       
+      this.item = item
+      this.description = item.description
+      this.name = item.name
+      this.condition = item.condition
     },
-
-    created () {
-      this.$store.dispatch('items/get')
-      .then(res => {
+    newItem() {
+      this.btnPostText = 'Create New Item'
+      this.Message("You updated Something",6000)
+    },
+    removeItem(e) {
+      if(!this.item.id) { return }
+      
+      this.Loading(true)
+      this.$store.dispatch('items/delete')
+      .then(res => {  
+        this.items = []      
+        this.items = res.data
+        this.Message("'Item' deleted.")
+        this.Loading(false)
+      }).catch(err => {        
+        this.Loading(false)
+        this.Error("There was an error deleting the item.")
+      });
+    },
+    postItem(e) {
+      this.$store.dispatch('items/post', {
+        name: this.name,
+        description: this.description,
+        condition: this.condition,
+        id: this.item.id
+      }).then(res => {
         console.log(res)
-        this.state.items = res
+        this.Message("Item posted successfully.")
+        this.fetchItems()
       }).catch(err => {
         console.log(err)
-        // this.showErrorMessage("There was an error fetching 'Items'.")
-
-        // NEW ALERT LOGIC....
-        this.$store.dispatch('alert/new', {
-          text: "There was an error fetching 'Items'.",
-          autoClose: true
-        })
-      });      
+      });
     },
-
-    methods: {      
-      itemSelect(e) {
-        console.log(e)
-        
-      },
-      newItem() {
-        this.btnPostText = 'Create New Item'
-        // NEW ALERT LOGIC....
-        this.$store.dispatch('alert/new', {
-          text: "There was an error fetching 'Items'.",
-          autoClose: true,
-          type: 'error'
-        })
-      },
-      postItem(e) {
-        console.log(e);
-        this.$store.dispatch('items/post', {
-          name: this.name,
-          description: this.description,
-          condition: this.condition
-        }).then(res => {
-          console.log(res)
-        }).catch(err => {
-          console.log(err)
-        });
-      },
-      addImage() {
-        this.showErrorMessage('This is an upcoming feature.')
-      },
-      hideError() {
-        this.alert.show = false
-      },
-      showErrorMessage(text) {
-        this.alert.show = true
-        this.alert.text = text
-        this.alert.type = 'error'
-      },
-      clear () {
-        this.$v.$reset()
-        this.password = ''
-        this.email = ''        
-        this.alert.show = false        
-      }
+    fetchItems() {
+      this.Loading(true)
+      this.$store.dispatch('items/get')
+      .then(res => {  
+        this.items = []      
+        this.items = res.data
+        this.Message("'Items' fetched.")
+        this.Loading(false)
+      }).catch(err => {        
+        this.Loading(false)
+        this.Error("There was an error fetching 'Items'.")
+      });
+    },
+    addImage() {
+      this.showErrorMessage('This is an upcoming feature.')
+    },
+    clear () {
+      this.$v.$reset()
+      this.password = ''
+      this.email = ''        
+      this.alert.show = false        
     }
   }
+}
 </script>
 

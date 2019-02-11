@@ -28,7 +28,9 @@
       <v-toolbar
         color="blue-grey"
         dark        
-        app>
+        app
+        extended
+        extension-height="7">
           <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
           <v-toolbar-title></v-toolbar-title>
           <v-spacer></v-spacer>
@@ -45,21 +47,27 @@
         </v-btn>    
 
         <v-toolbar-side-icon @click.stop="drawerRight = !drawerRight"></v-toolbar-side-icon>
+
+        <v-progress-linear 
+          v-show="loading" 
+          color="success"
+          slot="extension" 
+          :indeterminate="loading">          
+        </v-progress-linear>
       </v-toolbar>
-      
+    
       <!-- App Content -->
-      <v-content>
+      <v-content>        
         <v-container fill-height>
           <v-layout row wrap align-center>
-            <v-flex class="text-xs-center">
+            <v-flex class="text-xs-center">                            
               <router-view></router-view>              
             </v-flex>
-          </v-layout>
+          </v-layout>          
+          <Snackbar/>
         </v-container>
       </v-content>
-
-      <Alert/>
-      
+            
       <!-- App Footer -->
       <v-footer color="blue-grey" class="white--text" app>
         <span>TradeMe</span>
@@ -79,6 +87,7 @@
 import NavDrawerContent from './components/NavDrawerContent'
 import SideDrawerContent from './components/SideDrawerContent'
 import Alert from './components/Alert'
+import Snackbar from './components/Snackbar'
 
 export default {
   name: 'App',
@@ -106,7 +115,8 @@ export default {
   components: {
     NavDrawerContent,
     SideDrawerContent,
-    Alert
+    Alert,
+    Snackbar
   },
   created () {
     this.currentPage = this.$router.currentRoute.name
@@ -141,6 +151,9 @@ export default {
     }
   },
   computed: {
+     loading() {      
+      return this.$store.getters['app/loading']
+    },
     userAuth () {
       return this.$store.getters['auth/userAuth']  
     },
