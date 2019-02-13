@@ -9,11 +9,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-module.exports = function(app) {      
+module.exports = function(app, io) {      
     const items = require("../../controllers/items.js");        
 
+    app.get("/api/items/dashboard", auth.verifyToken, (httpReq, httpRes)=>{
+      return items.dashBoard(httpReq,httpRes);
+    });
+
     app.delete("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
-      return items.delete(httpReq, httpRes);
+      return items.delete(httpReq, httpRes, io);
     });
 
     app.get("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
@@ -21,15 +25,11 @@ module.exports = function(app) {
     });
 
     app.post("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
-      return items.create(httpReq, httpRes);
+      return items.create(httpReq, httpRes, io);
     });
 
-    app.post("/api/items/image", (httpReq, httpRes)=>{
-      // console.log(httpReq.body);
-      cloudinary.v2.uploader.upload(httpReq.body.image, {}, function(res, err){
-        console.log(res);
-        console.log(err);
-      });
+    app.post("/api/items/image", (httpReq, httpRes)=>{      
+      return items.createImage(httpReq, httpRes, io);
     });
 
     // app.post("/api/login", (httpReq, httpRes)=>{

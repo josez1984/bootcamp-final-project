@@ -6,26 +6,10 @@
           </v-card-title>
 
           <v-card-text>
-            <!-- <form action="/api/items/image" enctype="multipart/form-data" method="post">a -->
-            <!-- <div>
-              <input 
-                type="file" 
-                multiple 
-                name="image" 
-                accept="image/*"                 
-                @change="fileChange">
-              <v-btn
-                color="success"                
-                type="submit">
-                Upload
-              </v-btn> 
-              </div> -->
-            <!-- </form>  -->
             
             <form 
               enctype="multipart/form-data" 
-              novalidate 
-              v-if="isInitial || isSaving">              
+              novalidate >              
               <div class="dropbox">
                 <input 
                   type="file" 
@@ -86,7 +70,7 @@
   const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
   export default {
-    name: 'app',
+
     data() {
       return {
         currentFile: '',
@@ -118,64 +102,22 @@
         this.uploadedFiles = [];
         this.uploadError = null;
       },
-      // save(formData) {
-      //   console.log('FROM save(formData)')
-      //   console.log(formData)
-      //   // upload data to the server
-      //   this.currentStatus = STATUS_SAVING;
-
-      //   // upload(formData)
-      //   //   .then(x => {
-      //   //     this.uploadedFiles = [].concat(x);
-      //   //     this.currentStatus = STATUS_SUCCESS;
-      //   //   })
-      //   //   .catch(err => {
-      //   //     this.uploadError = err.response;
-      //   //     this.currentStatus = STATUS_FAILED;
-      //   //   });
-
-      //   this.loading = true
-        
-      //   this.$store.dispatch('items/postImage', formData)
-      //   .then((resp)=>{          
-      //     console.log(resp)
-      //     this.currentStatus = STATUS_SUCCESS;          
-      //   }).catch((err)=>{     
-      //     console.log(err)
-      //     this.currentStatus = STATUS_FAILED;
-      //   })
-      // },
       fileChange(e){
         const file = e.target.files[0]
-        console.log(file)
+        this.currentStatus = STATUS_SAVING
+        this.Loading(true)
         this.$store.dispatch('items/postImage', file)
         .then((resp)=>{          
-          console.log(resp)  
-          this.currentStatus = STATUS_SUCCESS;        
+          this.Loading(false)
+          this.currentStatus = STATUS_INITIAL; 
+          this.Message('The image was successfully uploaded.')          
+          this.$emit('pictureUploaded')
         }).catch((err)=>{     
-          console.log(err)
+          this.Loading(false)
           this.currentStatus = STATUS_FAILED;
+          this.Error('The image failed to upload.')
         })       
-      },
-      // filesChange(fieldName, fileList) {
-      //   console.log('FROM filesChange()')
-      //   console.log(fieldName)
-      //   // handle file changes
-      //   const formData = new FormData();
-
-      //   if (!fileList.length) return;
-
-      //   // append the files to FormData
-      //   Array
-      //     .from(Array(fileList.length).keys())
-      //     .map(x => {
-      //       formData.append(fieldName, fileList[x], fileList[x].name);
-      //     });
-
-      //   // save it
-      //   console.log(formData);
-      //   this.save(formData);
-      // }
+      }
     },
     mounted() {
       this.reset();

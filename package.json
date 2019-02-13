@@ -26,6 +26,7 @@
     "pg": "^7.8.0",
     "sass-loader": "^7.1.0",
     "sequelize": "^4.42.0",
+    "socket.io": "2.2.0",
     "vue": "^2.5.2",
     "vue-axios": "^2.1.4",
     "vue-material": "^1.0.0-beta-10.2",

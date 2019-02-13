@@ -10,6 +10,23 @@ var cookieCreate = require("./middleware/cookieCreate.js");
 var PORT = process.env.PORT || 8080;
 var app = express();
 
+var io = require('socket.io')
+  .listen(app.listen(PORT, function() {
+    console.log("App now listening at localhost:" + PORT);
+}), {path: '/api/socket.io'});
+
+// var io = require('socket.io').app.listen(PORT, function() {
+//       console.log("App now listening at localhost:" + PORT);
+//     });
+
+io.on('connection', function(socket){
+  console.log('DEBUG: a user connected');
+  
+  socket.on('connect_response', function(payload){
+    console.log('Client responded to the connection.');
+  });
+});
+
 app.use(cookieParser());
 app.use(cookieCreate);
 
@@ -26,10 +43,11 @@ var db = require("./models");
 
 // require("./routes/htmlRoutes.js")(app, pgPool);
 require("./routes/api/users.js")(app, pgPool);
-require("./routes/api/items.js")(app, pgPool);
+require("./routes/api/items.js")(app, io);
 
-db.sequelize.sync({force: false}).then(function() {
-  app.listen(PORT, function() {
-    console.log("App now listening at localhost:" + PORT);
-  });
-});
+// db.sequelize.sync({force: false}).then(function() {
+  // var io = require('socket.io')
+  //   .app.listen(PORT, function() {
+  //     console.log("App now listening at localhost:" + PORT);
+  //   });
+// });

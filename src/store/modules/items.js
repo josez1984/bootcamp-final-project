@@ -1,14 +1,14 @@
 import axios from 'axios'
 
 // initial state
-const state = {    
-  error: false,
+const state = {      
   // loading: false
+  currentId: 0
 }
 
 // getters
 const getters = {
-  // loading: state => state.loading
+  currentId: state => state.currentId
 }
 
 // actions
@@ -43,34 +43,38 @@ const actions = {
       })
     })
   },
+  dashboard({commit}, payload){
+    return new Promise((resolve, reject)=>{
+      axios.get('/api/items/dashboard', payload)
+      .then(res => {
+        resolve(res)
+      }).catch(err => { 
+        reject(err)
+      })
+    })
+  },
   postImage({commit}, payload){
     console.log('postImage items.js action')
     console.log(payload)
     
     return new Promise((resolve, reject)=>{
-      commit('loading', true);
-
+      const currentId = this.state.items.currentId      
       var reader = new FileReader();
       reader.readAsDataURL(payload);
       reader.onload = function () {      
-        let encoded = reader.result;
-        // if ((encoded.length % 4) > 0) {
-        //   encoded += '='.repeat(4 - (encoded.length % 4));
-        // }
-        console.log(encoded);
-        axios.post('/api/items/image', { image: encoded }).then(resp => {                
-          commit('loading', false);        
+        let encoded = reader.result;        
+        axios.post('/api/items/image', { 
+          image: encoded,
+          itemId: currentId
+        }).then(resp => {                                
           resolve(resp.data);
-        }).catch(err => {
-          commit('loading', false);
-          commit('error', true)        
+        }).catch(err => {             
           reject(err)
         })
       };
       reader.onerror = function (error) {
         console.log('Error: ', error);
       };
-
     })
   }
 }
@@ -78,7 +82,8 @@ const actions = {
 // mutations
 const mutations = {
   loading(state,status){state.loading=status},  
-  error(state,status){state.error=status}
+  error(state,status){state.error=status},
+  currentId(state,id){state.currentId=id}
 }
 
 export default {

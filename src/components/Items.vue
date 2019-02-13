@@ -8,7 +8,8 @@
           <v-card-text>
             <form @submit.prevent="postItem">
               <v-select
-                @change="itemSelect"
+                @change="itemSelect"  
+                v-model="this.id"              
                 :items="items"
                 label="Existing Items"
                 item-text="name"
@@ -44,41 +45,48 @@
               </v-btn>   
               
               <v-btn
+                v-if="this.id !== 0"
                 color="success"
                 @click="newItem">
-                  New
+                  New Item
               </v-btn>  
 
               <v-btn
+                v-if="this.id !== 0"
                 color="success"
                 @click="removeItem">
-                  Remove
+                  Remove Item
               </v-btn>
-
-              <PictureUpload></PictureUpload>           
+              
+              <v-carousel
+                height="350">                
+                <v-carousel-item                  
+                  v-for="(image,i) in this.item.Images"
+                  :key="i"
+                  :src="image.url">
+                </v-carousel-item>
+              </v-carousel>
+              
+              <PictureUpload 
+                @pictureUploaded="pictureUploaded">
+              </PictureUpload>           
             </form>
-
-            <!-- <v-progress-linear 
-              v-show="loading" 
-              :indeterminate="loading">
-            </v-progress-linear> -->
           </v-card-text>
 
         </v-card>
   </div>
 </template>
 
-
-
 <script>
+import { mapMutations } from 'vuex'
 import PictureUpload from '@/components/PictureUpload'
 
 export default {
   components: {
     PictureUpload
   },   
-  data: () => ({
-    btnPostText: 'Post',  
+  data: () => ({    
+    btnPostText: 'Create New Item',  
     condition: '',
     items: [],
     item: {},
@@ -107,30 +115,38 @@ export default {
   },
 
   mounted () {
-    this.fetchItems()        
+    this.fetchItems()  
+    this.clear()      
   },
 
   methods: {  
-    // ...mapMutations(["snackBar/showSnackBar", "snackbar/closeSnackBar"]),    
+    ...mapMutations(["items/currentId"]),  
+    pictureUploaded() {
+      this.fetchItems()  
+    },  
     itemSelect(id) {    
+      if(id === 0) { 
+        return this.clear()
+      }
+      this["items/currentId"](id)
+      this.id = id
       const item = this.items.find(el=>el.id === id)       
       this.item = item
       this.description = item.description
       this.name = item.name
       this.condition = item.condition
+      this.btnPostText = 'Update Item'
     },
     newItem() {
-      this.btnPostText = 'Create New Item'
-      this.Message("You updated Something",6000)
+      this.clear()
     },
     removeItem(e) {
-      if(!this.item.id) { return }
-      
+      if(this.item.id === 0) { return }
+
       this.Loading(true)
       this.$store.dispatch('items/delete')
       .then(res => {  
-        this.items = []      
-        this.items = res.data
+        this.fetchItems()
         this.Message("'Item' deleted.")
         this.Loading(false)
       }).catch(err => {        
@@ -148,6 +164,7 @@ export default {
         console.log(res)
         this.Message("Item posted successfully.")
         this.fetchItems()
+        this.clear()
       }).catch(err => {
         console.log(err)
       });
@@ -155,24 +172,27 @@ export default {
     fetchItems() {
       this.Loading(true)
       this.$store.dispatch('items/get')
-      .then(res => {  
-        this.items = []      
-        this.items = res.data
+      .then(res => {          
+        this.items = [{
+          name: 'Select an Item',
+          id: 0
+        }]      
+        this.items.push(...res.data)
         this.Message("'Items' fetched.")
         this.Loading(false)
+        this.itemSelect(this.id)
       }).catch(err => {        
         this.Loading(false)
         this.Error("There was an error fetching 'Items'.")
       });
     },
-    addImage() {
-      this.showErrorMessage('This is an upcoming feature.')
-    },
     clear () {
-      this.$v.$reset()
-      this.password = ''
-      this.email = ''        
-      this.alert.show = false        
+      this.btnPostText = 'Create New Item' 
+      this.condition = ''
+      this.item = {}
+      this.id = 0
+      this.name = ''
+      this.description = ''         
     }
   }
 }
