@@ -15,7 +15,7 @@ const getters = {
 const actions = {
   delete({commit}, payload) {
     return new Promise((resolve, reject)=>{
-      axios.delete('/api/item', payload)
+      axios.delete('/api/items', { data: payload })
       .then(res => {
         resolve(res)
       }).catch(err => {
@@ -54,9 +54,6 @@ const actions = {
     })
   },
   postImage({commit}, payload){
-    console.log('postImage items.js action')
-    console.log(payload)
-    
     return new Promise((resolve, reject)=>{
       const currentId = this.state.items.currentId      
       var reader = new FileReader();

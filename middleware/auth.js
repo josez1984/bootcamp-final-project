@@ -12,18 +12,15 @@ module.exports = function() {
                     return res.status(400).json({ error: true, message: "Auth Token is not provided" });
                 }
             }
-            console.log("here");
+
             jwt.verify(token, process.env.SECRET,(err,decoded)=>{
-                if(err) {
-                    console.log("here0");
+                if(err) {                    
                     return res.status(400).json({ error: true, message: 'There was a problem with the authentication token provided.' });    
                 }
-                else if(Date.now() < decoded.exp) {
-                    console.log("here4");
+                else if(Date.now() < decoded.exp) {                    
                     return res.status(400).json({ error: true, message: 'The token provided is expired.' });    
-                }
-                console.log("here1");
-                console.log(decoded)
+                }                
+
                 db.Users.findOne({
                     where: {
                         id: decoded.userId
@@ -36,8 +33,7 @@ module.exports = function() {
                     req.user = { 
                         id: sqlRes.dataValues.id,
                         email: sqlRes.dataValues.email 
-                    };          
-                    console.log('auth.js() req.user', req.user)                              
+                    };                              
                     next();
                           
                 }).catch(function(err) {                                      

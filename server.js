@@ -10,14 +10,10 @@ var cookieCreate = require("./middleware/cookieCreate.js");
 var PORT = process.env.PORT || 8080;
 var app = express();
 
-var io = require('socket.io')
-  .listen(app.listen(PORT, function() {
+var io = require('socket.io').listen(app.listen(PORT, function() {
     console.log("App now listening at localhost:" + PORT);
+    db.sequelize.sync({force: false});
 }), {path: '/api/socket.io'});
-
-// var io = require('socket.io').app.listen(PORT, function() {
-//       console.log("App now listening at localhost:" + PORT);
-//     });
 
 io.on('connection', function(socket){
   console.log('DEBUG: a user connected');

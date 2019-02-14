@@ -17,6 +17,7 @@ module.exports = function(app, io) {
     });
 
     app.delete("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
+      console.log('app.delete(): ', httpReq.body)
       return items.delete(httpReq, httpRes, io);
     });
 
@@ -25,7 +26,11 @@ module.exports = function(app, io) {
     });
 
     app.post("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
-      return items.create(httpReq, httpRes, io);
+      if(httpReq.body.id) {
+        return items.update(httpReq, httpRes, io);
+      } else {
+        return items.create(httpReq, httpRes, io);
+      }
     });
 
     app.post("/api/items/image", (httpReq, httpRes)=>{      

@@ -38,6 +38,14 @@
                 label="Condition">
               </v-select>
 
+              <v-select
+                :disabled="statusSelectDisable"
+                v-model="status"
+                :items="statusItems"
+                ref="status"
+                label="Status">
+              </v-select>
+
               <v-btn
                 color="success"                
                 type="submit">
@@ -86,6 +94,12 @@ export default {
     PictureUpload
   },   
   data: () => ({    
+    statusSelectDisable: false,
+    status: null,
+    statusItems: [
+      'Active',
+      'Inactive'      
+    ],
     btnPostText: 'Create New Item',  
     condition: '',
     items: [],
@@ -114,9 +128,8 @@ export default {
     
   },
 
-  mounted () {
-    this.fetchItems()  
-    this.clear()      
+  mounted () { 
+    this.fetchItems()     
   },
 
   methods: {  
@@ -136,16 +149,19 @@ export default {
       this.name = item.name
       this.condition = item.condition
       this.btnPostText = 'Update Item'
+      this.statusSelectDisable = false
+      this.status = item.status || 'Active'
     },
     newItem() {
       this.clear()
     },
     removeItem(e) {
-      if(this.item.id === 0) { return }
-
+      if(this.id === 0) { return }      
       this.Loading(true)
-      this.$store.dispatch('items/delete')
-      .then(res => {  
+      this.$store.dispatch('items/delete', {
+        itemId: this.id
+      }).then(res => {  
+        this.clear()
         this.fetchItems()
         this.Message("'Item' deleted.")
         this.Loading(false)
@@ -154,25 +170,25 @@ export default {
         this.Error("There was an error deleting the item.")
       });
     },
-    postItem(e) {
+    postItem(e) {      
       this.$store.dispatch('items/post', {
         name: this.name,
         description: this.description,
         condition: this.condition,
-        id: this.item.id
-      }).then(res => {
-        console.log(res)
+        id: this.item.id,
+        status: this.status
+      }).then(res => {        
         this.Message("Item posted successfully.")
         this.fetchItems()
         this.clear()
-      }).catch(err => {
-        console.log(err)
+      }).catch(err => {                
+        this.Error("There was an error posting the new item.")
       });
     },
     fetchItems() {
       this.Loading(true)
       this.$store.dispatch('items/get')
-      .then(res => {          
+      .then(res => {                  
         this.items = [{
           name: 'Select an Item',
           id: 0
@@ -186,7 +202,7 @@ export default {
         this.Error("There was an error fetching 'Items'.")
       });
     },
-    clear () {
+    clear () {      
       this.btnPostText = 'Create New Item' 
       this.condition = ''
       this.item = {}

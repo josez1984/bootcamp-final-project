@@ -11,7 +11,8 @@ module.exports = {
   dashBoard: (httpReq, httpRes)=>{
     return db.Items.findAll({
       where: {        
-        deleted: false
+        deleted: false,
+        status: 'Active'
       },
       include: [{
         model: db.Images,
@@ -23,25 +24,22 @@ module.exports = {
       httpRes.status(500).json(sqlErr);
     })
   },
-  delete: (httpReq, httpRes, io)=>{    
-      return db.Items.update(
-        {
-          deleted: false
-        },
-        {
-          returning: true, 
-          where: 
-          {
-            id: httpReq.body.bookId
-          } 
-        }
-      ).then(function([ rowsUpdate, [updatedBook] ]) {
-        console.log(updatedBook)
-        io.emit('update_item', updatedBook)
-        httpRes.status(200).json(updatedBook)
-      }).catch(err => {
-        console.log(err)
-      })     
+  delete: (httpReq, httpRes, io)=>{        
+    return db.Items.update({
+        deleted: true
+      },{
+        returning: true, 
+        where: {
+          id: httpReq.body.itemId
+        } 
+      }
+    ).then(function([ rowsUpdate, [updateItem] ]) {      
+      io.emit('delete_item', updateItem.dataValues)
+      httpRes.status(200).json(updateItem.dataValues)
+    }).catch(err => {
+
+      console.log(err)
+    })     
   },
   fetch: (httpReq, httpRes)=>{
     return db.Items.findAll({
@@ -53,10 +51,28 @@ module.exports = {
         model: db.Images,
         required: false,
       }]
-    }).then(sqlRes => {      
+    }).then(sqlRes => {            
       httpRes.status(200).json(sqlRes);
     }).catch(sqlErr => {      
       httpRes.status(500).json(sqlErr);
+    })
+  },
+  update: (httpReq, httpRes, io)=>{
+    return db.Items.update({
+      name: httpReq.body.name,
+      description: httpReq.body.description,
+      condition: httpReq.body.condition,            
+      status: httpReq.body.status
+    },{
+      where: {
+        id: httpReq.body.id
+      }
+    }).then(sqlRes =>  {
+      io.emit('update_item', sqlRes)
+      httpRes.status(200).json(sqlRes);
+    }).catch(sqlErr => {
+      if(sqlErr) { throw sqlErr }
+      httpRes.status(500).json({error: 'Database error'});
     })
   },
   create: (httpReq, httpRes, io)=>{               
@@ -65,7 +81,8 @@ module.exports = {
       description: httpReq.body.description,
       condition: httpReq.body.condition,
       UserId: httpReq.user.id,
-      deleted: false
+      deleted: false,
+      status: httpReq.body.status
     }).then(function(sqlRes) {
       io.emit('new_item', sqlRes)
       httpRes.status(200).json(sqlRes);
