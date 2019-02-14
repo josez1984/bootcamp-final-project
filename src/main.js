@@ -1,5 +1,6 @@
 import 'babel-polyfill'
 import Vue from 'vue'
+import { mapMutations } from 'vuex'
 import VueMaterial from 'vue-material'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -22,7 +23,6 @@ import NavDrawerContent from './components/NavDrawerContent'
 import Login from './components/Login'
 
 Vue.filter('currency', currency)
-// Vue.use(VueMaterial)
 Vue.use(Vuetify)
 Vue.use(VueAxios, axios)
 
@@ -38,6 +38,32 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+Vue.mixin({
+  methods: {  
+    ...mapMutations(["app/loading","snackBar/showSnackBar", "snackBar/closeSnackBar"]),    
+    Error (text, timeout, multiline){
+      this['snackBar/showSnackBar']({
+        text: text,        
+        type: 'error',
+        timeout: timeout,
+        multiline: multiline
+      })
+    },
+    Message(text, timeout, multiline) {      
+      this['snackBar/showSnackBar']({
+        text: text,        
+        type: 'info',
+        timeout: timeout,
+        multiline: multiline
+      })
+    },
+    Loading(value) {
+      console.log(this)
+      this['app/loading'](value);
+    }
+  }
+})
+
 new Vue({
   el: '#app',
   router,
@@ -50,3 +76,4 @@ new Vue({
   },
   template: '<App/>'
 })
+

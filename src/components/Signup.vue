@@ -61,6 +61,10 @@
   import { required, maxLength, email } from 'vuelidate/lib/validators'
 
   export default {
+    mounted() {
+      this.Message("Welcome to Trade me. We hold the largest selection of used goods in the world. Get started now with a free account!", 15000)
+    },
+
     mixins: [validationMixin],
 
     validations: {
@@ -98,29 +102,30 @@
 
     methods: {
       signup() {
-        this.hideError()
+        // this.hideError()
         this.loading = true
         let email = this.email
         let password = this.password
         let passwordConfirm = this.passwordConfirm
         if(password !== passwordConfirm) {
           this.loading = false;
-          return this.showErrorMessage('The passwords must match')
+          return this.Error('The passwords must match')
         }
         this.$store.dispatch('auth/signup', {
           email,
           password          
         }).then((resp)=>{          
-          this.alert.show = false          
-          this.loading = false                    
-          this.email = ''
+          // this.alert.show = false          
+          this.loading = false                              
           this.password = ''
           this.passwordConfirm = ''
           this.$router.push('/dashboard')
+          this.Message(`Welcome ${this.email}. We are glad you decided to join us. Now just log in to your new account, and you can start uploading used items to trade with other users worldwide. Chances are someone in the world has that rare item you seek!!`, 10000, true)
+          this.email = ''
         }).catch((err)=>{   
           console.log(err.message)  
           let msg = err.message || 'There was an error signin up.';
-          this.showErrorMessage(msg)                        
+          this.Error(msg)                        
           this.loading = false
         })
       },

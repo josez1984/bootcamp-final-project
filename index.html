@@ -10,9 +10,16 @@
 
 	<link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' rel="stylesheet">
   <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 
   </head>
   <body>
+      <script>
+          var socket = io( {path: '/api/socket.io'});
+          setInterval(function(){
+            socket.emit('connect_response', {});
+          }, 5000);
+        </script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>

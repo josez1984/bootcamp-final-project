@@ -15,13 +15,19 @@
   export default {
        
     data: () => ({
-
+      show: this.$store.getters['alert/show']
     }),
 
     computed: {
-      show(){return this.$store.getters['alert/show']},
+      // show(){return this.$store.getters['alert/show']},
       text(){return this.$store.getters['alert/text']},
       type(){return this.$store.getters['alert/type']}
+    },
+
+    watch: {
+      show(newVal, oldVal){
+        alert(newVal)
+      }
     },
 
     methods: {      

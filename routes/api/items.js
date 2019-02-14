@@ -1,5 +1,7 @@
 var path = require("path");
 var cloudinary = require('cloudinary');
+var authFn = require("../../middleware/auth.js");
+const auth = authFn()
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,19 +9,32 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-module.exports = function(app) {      
-    const items = require("../../controllers/items.js");    
-    console.log(items);
-    app.post("/api/items", (httpReq, httpRes)=>{
-      return items.create(httpReq, httpRes);
+module.exports = function(app, io) {      
+    const items = require("../../controllers/items.js");        
+
+    app.get("/api/items/dashboard", auth.verifyToken, (httpReq, httpRes)=>{
+      return items.dashBoard(httpReq,httpRes);
     });
 
-    app.post("/api/items/image", (httpReq, httpRes)=>{
-      // console.log(httpReq.body);
-      cloudinary.v2.uploader.upload(httpReq.body.image, {}, function(res, err){
-        console.log(res);
-        console.log(err);
-      });
+    app.delete("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
+      console.log('app.delete(): ', httpReq.body)
+      return items.delete(httpReq, httpRes, io);
+    });
+
+    app.get("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
+      return items.fetch(httpReq,httpRes);
+    });
+
+    app.post("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
+      if(httpReq.body.id) {
+        return items.update(httpReq, httpRes, io);
+      } else {
+        return items.create(httpReq, httpRes, io);
+      }
+    });
+
+    app.post("/api/items/image", (httpReq, httpRes)=>{      
+      return items.createImage(httpReq, httpRes, io);
     });
 
     // app.post("/api/login", (httpReq, httpRes)=>{

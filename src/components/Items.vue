@@ -8,9 +8,12 @@
           <v-card-text>
             <form @submit.prevent="postItem">
               <v-select
-                @change="itemSelect"
+                @change="itemSelect"  
+                v-model="this.id"              
                 :items="items"
-                label="Existing Items">
+                label="Existing Items"
+                item-text="name"
+                item-value="id">
               </v-select>
 
               <v-text-field
@@ -35,6 +38,14 @@
                 label="Condition">
               </v-select>
 
+              <v-select
+                :disabled="statusSelectDisable"
+                v-model="status"
+                :items="statusItems"
+                ref="status"
+                label="Status">
+              </v-select>
+
               <v-btn
                 color="success"                
                 type="submit">
@@ -42,129 +53,164 @@
               </v-btn>   
               
               <v-btn
+                v-if="this.id !== 0"
                 color="success"
                 @click="newItem">
                   New Item
               </v-btn>  
 
-              <PictureUpload></PictureUpload>           
-            </form>
-
-            <v-progress-linear 
-              v-show="loading" 
-              :indeterminate="loading">
-            </v-progress-linear>
-
-            <v-alert
-              v-model="alert.show"
+              <v-btn
+                v-if="this.id !== 0"
+                color="success"
+                @click="removeItem">
+                  Remove Item
+              </v-btn>
               
-              dismissible
-              transition="scale-transition">
-                {{ alert.text }}.
-            </v-alert>
+              <v-carousel
+                height="350">                
+                <v-carousel-item                  
+                  v-for="(image,i) in this.item.Images"
+                  :key="i"
+                  :src="image.url">
+                </v-carousel-item>
+              </v-carousel>
+              
+              <PictureUpload 
+                @pictureUploaded="pictureUploaded">
+              </PictureUpload>           
+            </form>
           </v-card-text>
 
         </v-card>
   </div>
 </template>
 
-
-
 <script>
+import { mapMutations } from 'vuex'
 import PictureUpload from '@/components/PictureUpload'
 
-  export default {
-    components: {
-      PictureUpload
-    },   
-    data: () => ({
-      btnPostText: 'Post',
-      items: [],
-      condition: '',
-      conditions: [
-        'Never Opened',
-        'Slightly Used',
-        'Very Used',
-        'Cosmetic Wear',
-        'Heavily Used, Working',
-        'Heavily Used, Not Working'
-      ],
-      id: 0,
-      name: '',
-      description: '',
-      loading: false,      
-      alert: {
-        show: false,
-        text: '',
-        type: ''
+export default {
+  components: {
+    PictureUpload
+  },   
+  data: () => ({    
+    statusSelectDisable: false,
+    status: null,
+    statusItems: [
+      'Active',
+      'Inactive'      
+    ],
+    btnPostText: 'Create New Item',  
+    condition: '',
+    items: [],
+    item: {},
+    conditions: [
+      'Never Opened',
+      'Barely Used',
+      'Slightly Used',
+      'Very Used',
+      'Cosmetic Wear',
+      'Heavily Used, Working',
+      'Heavily Used, Not Working'
+    ],
+    id: 0,
+    name: '',
+    description: '',
+    loading: false,      
+    alert: {
+      show: false,
+      text: '',
+      type: ''
+    }
+  }),
+
+  computed: {
+    
+  },
+
+  mounted () { 
+    this.fetchItems()     
+  },
+
+  methods: {  
+    ...mapMutations(["items/currentId"]),  
+    pictureUploaded() {
+      this.fetchItems()  
+    },  
+    itemSelect(id) {    
+      if(id === 0) { 
+        return this.clear()
       }
-    }),
-
-    computed: {
-      
+      this["items/currentId"](id)
+      this.id = id
+      const item = this.items.find(el=>el.id === id)       
+      this.item = item
+      this.description = item.description
+      this.name = item.name
+      this.condition = item.condition
+      this.btnPostText = 'Update Item'
+      this.statusSelectDisable = false
+      this.status = item.status || 'Active'
     },
-
-    created () {
+    newItem() {
+      this.clear()
+    },
+    removeItem(e) {
+      if(this.id === 0) { return }      
+      this.Loading(true)
+      this.$store.dispatch('items/delete', {
+        itemId: this.id
+      }).then(res => {  
+        this.clear()
+        this.fetchItems()
+        this.Message("'Item' deleted.")
+        this.Loading(false)
+      }).catch(err => {        
+        this.Loading(false)
+        this.Error("There was an error deleting the item.")
+      });
+    },
+    postItem(e) {      
+      this.$store.dispatch('items/post', {
+        name: this.name,
+        description: this.description,
+        condition: this.condition,
+        id: this.item.id,
+        status: this.status
+      }).then(res => {        
+        this.Message("Item posted successfully.")
+        this.fetchItems()
+        this.clear()
+      }).catch(err => {                
+        this.Error("There was an error posting the new item.")
+      });
+    },
+    fetchItems() {
+      this.Loading(true)
       this.$store.dispatch('items/get')
-      .then(res => {
-        console.log(res)
-        this.state.items = res
-      }).catch(err => {
-        console.log(err)
-        // this.showErrorMessage("There was an error fetching 'Items'.")
-
-        // NEW ALERT LOGIC....
-        this.$store.dispatch('alert/new', {
-          text: "There was an error fetching 'Items'.",
-          autoClose: true
-        })
-      });      
+      .then(res => {                  
+        this.items = [{
+          name: 'Select an Item',
+          id: 0
+        }]      
+        this.items.push(...res.data)
+        this.Message("'Items' fetched.")
+        this.Loading(false)
+        this.itemSelect(this.id)
+      }).catch(err => {        
+        this.Loading(false)
+        this.Error("There was an error fetching 'Items'.")
+      });
     },
-
-    methods: {      
-      itemSelect(e) {
-        console.log(e)
-        
-      },
-      newItem() {
-        this.btnPostText = 'Create New Item'
-        // NEW ALERT LOGIC....
-        this.$store.dispatch('alert/new', {
-          text: "There was an error fetching 'Items'.",
-          autoClose: true,
-          type: 'error'
-        })
-      },
-      postItem(e) {
-        console.log(e);
-        this.$store.dispatch('items/post', {
-          name: this.name,
-          description: this.description,
-          condition: this.condition
-        }).then(res => {
-          console.log(res)
-        }).catch(err => {
-          console.log(err)
-        });
-      },
-      addImage() {
-        this.showErrorMessage('This is an upcoming feature.')
-      },
-      hideError() {
-        this.alert.show = false
-      },
-      showErrorMessage(text) {
-        this.alert.show = true
-        this.alert.text = text
-        this.alert.type = 'error'
-      },
-      clear () {
-        this.$v.$reset()
-        this.password = ''
-        this.email = ''        
-        this.alert.show = false        
-      }
+    clear () {      
+      this.btnPostText = 'Create New Item' 
+      this.condition = ''
+      this.item = {}
+      this.id = 0
+      this.name = ''
+      this.description = ''         
     }
   }
+}
 </script>
 

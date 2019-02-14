@@ -46,15 +46,15 @@ const actions = {
       axios.post(
         '/api/login', 
         user
-      ).then(resp => {
+      ).then(resp => {        
         const token = resp.data.token
-        const email = resp.data.userData[0].email
+        const email = resp.data.email
         localStorage.setItem('token',token)
         localStorage.setItem('email',email)
         axios.defaults.headers.common['x-access-token'] = token
         commit('success', {token, email})
         resolve(resp)
-      }).catch(err => {
+      }).catch(err => {        
         commit('error')
         localStorage.removeItem('token')
         localStorage.removeItem('email')

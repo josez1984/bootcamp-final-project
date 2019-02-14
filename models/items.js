@@ -11,18 +11,31 @@ module.exports = function(sequelize, DataTypes) {
     condition: {
       type: DataTypes.TEXT,
       allowNull: false
+    },
+    deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      default: false
+    },
+    status: {
+      type: DataTypes.TEXT,
+      allowNull: false
     }
   });
 
-  // Post.associate = function(models) {
-  //   // We're saying that a Post should belong to an Author
-  //   // A Post can't be created without an Author due to the foreign key constraint
-  //   Post.belongsTo(models.Author, {
-  //     foreignKey: {
-  //       allowNull: false
-  //     }
-  //   });
-  // };
+  Item.associate = function(models) {
+    Item.belongsTo(models.Users, {
+      foreignKey: {
+        allowNull: false
+      }
+    });
+
+    Item.hasMany(models.Images);
+  };
+
+  // Item.associate = function(models) {
+  //   Item.hasMany(models.Images);
+  // }
 
   return Item;
 };
