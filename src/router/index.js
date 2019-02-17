@@ -12,9 +12,15 @@ import ResetPassword from '@/components/ResetPassword'
 import PaymentMethods from '@/components/PaymentMethods'
 import Signup from '@/components/Signup';
 import Items from '@/components/Items';
+import Offers from '@/components/Offers';
 
 let router = new Router({
   routes: [
+    {
+      path: '/offers',
+      name: 'Offers',
+      component: Offers
+    },
     {
       path: '/',
       name: 'Home',

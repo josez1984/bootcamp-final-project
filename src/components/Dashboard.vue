@@ -21,61 +21,59 @@
               </div>
             </v-card-title>
             <v-card-actions>
-              <v-dialog v-model="dialog" persistent max-width="600px">
-      <!-- <v-btn slot="activator" color="primary" dark>Open Dialog</v-btn> -->
-      <v-btn slot="activator" flat color="orange">I want this</v-btn>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Contact the seller</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <v-layout wrap>
-              <v-flex xs12 sm6 md4>
-                <v-text-field label="Legal first name*" required></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                <v-text-field label="Legal middle name" hint="example of helper text only on focus"></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6 md4>
-                <v-text-field
-                  label="Legal last name*"
-                  hint="example of persistent helper text"
-                  persistent-hint
-                  required
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field label="Email*" required></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field label="Password*" type="password" required></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-select
-                  :items="['0-17', '18-29', '30-54', '54+']"
-                  label="Age*"
-                  required
-                ></v-select>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-autocomplete
-                  :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
-                  label="Interests"
-                  multiple
-                ></v-autocomplete>
-              </v-flex>
-            </v-layout>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click="dialog = false">Close</v-btn>
-          <v-btn color="blue darken-1" flat @click="dialog = false">Save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>                                         
+              <v-dialog :disabled="!showIWantThisButton(item)" v-model="dialog" persistent max-width="600px">                
+                <v-btn :disabled="!showIWantThisButton(item)" @click.prevent="iWantThisClick(item)" slot="activator" flat color="orange">{{ iWantThisBtnText(item) }}</v-btn>
+                <v-card>                  
+                  <v-card-title>
+                    <span class="headline">Make your offer</span>
+                  </v-card-title>                
+
+                  <v-card-text>
+                    <v-container grid-list-md>
+                      <v-layout wrap>
+                        
+                        <v-flex xs12>
+                          <v-text-field
+                            v-model="offer.dollarAmt"
+                            label="Dollar amount"
+                            hint="Dollar amount offered for the item."
+                            persistent-hint
+                            type="number">
+                          </v-text-field>
+                        </v-flex>
+
+                        <v-flex xs12>
+                          <v-select
+                            v-model="offer.userItemsSelected"
+                            :items="offer.userItems"
+                            ref="itemsOffered"
+                            label="Items Offered"
+                            item-text="name"
+                            item-value="id"
+                            return-object
+                            multiple>
+                          </v-select>
+                        </v-flex>
+
+                        <v-flex xs12 sm6 md4>
+                          <v-textarea
+                            solo
+                            v-model="offer.message"       
+                            ref="message"         
+                            label="Message">
+                          </v-textarea> 
+                        </v-flex>
+                        
+                      </v-layout>
+                    </v-container>                    
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="info" @click="dialog = false">Cancel</v-btn>
+                    <v-btn color="info" @click="postOffer">Post Offer</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>                                         
             </v-card-actions>
             <v-card-actions>
               <v-btn flat color="orange">Ask a question</v-btn>             
@@ -91,9 +89,17 @@
   export default {
     name: 'Dashboard',
     data: () => ({
+      offer: {
+        dollarAmt: "0.00",
+        userItems: [],
+        userItemsSelected: [],        
+        message: null,
+        userIdReceiver: null
+      },
       dialog: false,
-      items: [],
-      socket: io( {path: '/api/socket.io'})
+      items: [], 
+      item: {},     
+      socket: io({path: '/api/socket.io'})
     }),
     mounted() {
       this.fetchItems()      
@@ -107,12 +113,66 @@
       });
     },
     methods: {
+      iWantThisBtnText(item) {
+        switch(item.status) {
+          case 'Active': return 'I want This'
+          default: return item.status
+        }
+      },      
+      showIWantThisButton(item) {        
+        return (item.status === 'Active') ? true : false
+      },
+      postOffer() {     
+        const payload = {
+          offeredItems: this.offer.userItemsSelected,
+          dollarAmt: this.offer.dollarAmt,
+          message: this.offer.message,
+          userIdReceiver: this.offer.userIdReceiver,
+          status: this.offer.status,
+          itemId: this.item.id,
+          item: this.offer.item
+        }        
+        this.$store.dispatch('offers/post', payload)
+        .then(res => {                                 
+          this.Message("Offer posted")
+          this.fetchItems()
+          this.Loading(false)                   
+        }).catch(err => {        
+          this.Loading(false)
+          this.Error("There was an error posting the Offer")
+        });
+
+        this.dialog = false
+      },
+      iWantThisClick(item) {
+        if(item.status !== 'Active') {
+          alert(item.status)
+          const self = this
+          setTimeout(()=>{
+            self.dialog = false
+          },5)          
+        }
+        this.fetchMyItems()
+        this.item = item        
+        this.offer.item = item
+      },
+      fetchMyItems() {
+        this.Loading(true)
+        this.$store.dispatch('items/get', {
+            status: 'Active'
+        }).then(res => {                       
+          this.offer.userItems = res.data                    
+          this.Loading(false)                   
+        }).catch(err => {        
+          this.Loading(false)
+          this.Error("There was an error fetching User items.")
+        });
+      },
       fetchItems() {
         this.Loading(true)
         this.$store.dispatch('items/dashboard')
         .then(res => {                       
-          this.items = res.data
-          this.Message("Dashboard data fetched.")
+          this.items = res.data          
           this.Loading(false)                   
         }).catch(err => {        
           this.Loading(false)

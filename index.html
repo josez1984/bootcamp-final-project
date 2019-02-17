@@ -18,7 +18,7 @@
           var socket = io( {path: '/api/socket.io'});
           setInterval(function(){
             socket.emit('connect_response', {});
-          }, 5000);
+          }, 60000);
         </script>
     <div id="app"></div>
     <!-- built files will be auto injected -->

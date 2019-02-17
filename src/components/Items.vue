@@ -150,7 +150,15 @@ export default {
       this.condition = item.condition
       this.btnPostText = 'Update Item'
       this.statusSelectDisable = false
-      this.status = item.status || 'Active'
+      this.statusItems = [
+        'Active',
+        'Inactive'      
+      ]
+      if(this.statusItems.indexOf(item.status) < 0) {
+        this.statusItems.push(item.status)
+        this.statusSelectDisable = true
+      }      
+      this.status = item.status || 'Active'      
     },
     newItem() {
       this.clear()
