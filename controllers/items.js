@@ -12,7 +12,10 @@ module.exports = {
     return db.Items.findAll({
       where: {        
         deleted: false,
-        status: 'Active'
+        status: ['Active', 'Offer Pending'],
+        UserId: {
+          $ne: httpReq.user.id
+        }
       },
       include: [{
         model: db.Images,
@@ -42,11 +45,15 @@ module.exports = {
     })     
   },
   fetch: (httpReq, httpRes)=>{
+    console.log(httpReq.query)
+    let where = {
+      UserId: httpReq.user.id,
+      deleted: false,
+      ...httpReq.query
+    }
+    console.log(where)
     return db.Items.findAll({
-      where: {
-        UserId: httpReq.user.id,
-        deleted: false
-      },
+      where,
       include: [{
         model: db.Images,
         required: false,

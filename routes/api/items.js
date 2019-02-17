@@ -22,6 +22,7 @@ module.exports = function(app, io) {
     });
 
     app.get("/api/items", auth.verifyToken, (httpReq, httpRes)=>{
+      console.log(httpReq.data)
       return items.fetch(httpReq,httpRes);
     });
 

@@ -84,6 +84,11 @@
           icon: 'dashboard',
           title: 'Items',
           link: '/items'
+        },
+        {
+          icon: 'dashboard',
+          title: 'Offers',
+          link: '/offers'
         }
       ]
     }),

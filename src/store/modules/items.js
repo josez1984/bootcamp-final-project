@@ -34,8 +34,9 @@ const actions = {
     })
   },
   get({commit}, payload){
+    console.log(payload)
     return new Promise((resolve, reject)=>{
-      axios.get('/api/items', payload)
+      axios.get('/api/items', { params: payload })
       .then(res => {
         resolve(res)
       }).catch(err => { 
