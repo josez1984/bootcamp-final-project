@@ -114,9 +114,9 @@
         }
       });
 
-      this.socket.on('update_offer', (data) => {        
-        this.fetchOffers()
-      });
+      // this.socket.on('new_offer', (data) => {        
+      //   this.fetchOffers()
+      // });
     },
     methods: {
       acceptOffer(offer) {        

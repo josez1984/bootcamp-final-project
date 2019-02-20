@@ -187,7 +187,7 @@ module.exports = {
 
       await transaction.commit()
       io.emit('new_notification', notification)      
-      io.emit('new_offer')
+      io.emit('offer_update')
       return httpRes.status(200).json({message: 'Offer posted'});            
     } catch (err) {            
       if(err) { throw err }      
