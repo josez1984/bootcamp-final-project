@@ -1,13 +1,24 @@
 <template>
   <div>
-    <v-toolbar flat>
-      <v-list>
+    <v-toolbar flat v-show="userAuth">
+      <!-- <v-list>
         <v-list-tile>
           <v-list-tile-title class="title">
             {{ appName }}
           </v-list-tile-title>
         </v-list-tile>
-      </v-list>
+      </v-list> -->
+      <v-list class="pa-0">
+          <v-list-tile avatar>
+            <v-list-tile-avatar>
+              <img src="https://res.cloudinary.com/horqnq3wz/image/upload/v1550417994/tkwrblvsnovhwarvbjfm.png">
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ authEmail }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
     </v-toolbar>
 
     <v-divider></v-divider>
@@ -57,7 +68,10 @@
     computed: {
       userAuth () {
         return this.$store.getters['auth/userAuth']  
-      }      
+      },
+      authEmail () {
+        return this.$store.getters['auth/email']
+      }
     },
     data: () => ({
       menuItems: [{

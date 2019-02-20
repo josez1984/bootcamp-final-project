@@ -39,17 +39,11 @@ export default {
     menuItems: [],
     mainMenuItems: {
       Dashboard: {
-        routeMap: [
-          '/leads',
+        routeMap: [          
           '/filters',
           '/dashboard'
         ],
         menuItems: [
-          {
-            icon: 'home', 
-            title: 'Leads', 
-            link: '/leads'
-          },
           {
             icon: 'home', 
             title: 'Filters', 

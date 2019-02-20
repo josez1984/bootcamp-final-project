@@ -32,8 +32,7 @@ const actions = {
       axios.post(
         '/api/signup',
         user
-      ).then(resp => {
-        console.log(resp)
+      ).then(resp => {        
         resolve(resp)
       }).catch(err => {        
         reject(err.response.data)
@@ -48,7 +47,7 @@ const actions = {
         user
       ).then(resp => {        
         const token = resp.data.token
-        const email = resp.data.email
+        const email = resp.data.user.email
         localStorage.setItem('token',token)
         localStorage.setItem('email',email)
         axios.defaults.headers.common['x-access-token'] = token

@@ -36,16 +36,35 @@
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
 
-        <v-btn icon>
-          <v-badge right>
-            <span slot="badge">{{ nNotifications }}</span>
-            <v-icon              
-              color="grey lighten-1">
-                notifications
-            </v-icon>
-          </v-badge>
-        </v-btn>    
+        <v-menu bottom left offset-y>
+          <v-btn slot="activator" icon>
+            <v-badge right>
+              <span v-if="nNotifications > 0" slot="badge">{{ nNotifications }}</span>
+              <v-icon              
+                color="grey lighten-1">
+                  notifications
+              </v-icon>
+            </v-badge>
+          </v-btn>
 
+          <v-list two-line>
+            <template v-for="(notification, index) in notifications">
+              <v-list-tile
+                :key="notification.header"
+                avatar
+                ripple
+                @click="toggle(index)">
+
+                <v-list-tile-content>                  
+                  <v-list-tile-sub-title class="text--primary">{{ notification.header }}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>{{ notification.message }}</v-list-tile-sub-title>
+                </v-list-tile-content>
+
+              </v-list-tile>
+            </template>
+          </v-list>
+        </v-menu>
+        
         <v-toolbar-side-icon @click.stop="drawerRight = !drawerRight"></v-toolbar-side-icon>
 
         <v-progress-linear 
@@ -94,13 +113,13 @@ export default {
   props: {
     source: String
   },
-  data: () => ({  
+  data: () => ({
+    notifications: [],    
     signupLink: {
         icon: 'dashboard', 
         title: 'Sign Up', 
         link: '/signup'
-      },  
-    nNotifications: 5,
+      },      
     appName: "TradeMe",
     drawer: null,
     drawerRight: null,
@@ -110,7 +129,8 @@ export default {
         show: false,
         text: '',
         type: ''
-    }
+    },
+    socket: io({path: '/api/socket.io'})
   }),
   components: {
     NavDrawerContent,
@@ -121,8 +141,9 @@ export default {
   created () {
     this.currentPage = this.$router.currentRoute.name
     this.currentPath = this.$router.currentRoute.path
+    
     if(localStorage.getItem('token')) {
-      this.$http.defaults.headers.common['x-access-token'] = localStorage.getItem('token')
+      this.$http.defaults.headers.common['x-access-token'] = localStorage.getItem('token')      
     } 
     
     this.$http.interceptors.response.use(undefined,(err)=>{
@@ -133,12 +154,28 @@ export default {
         throw err;
       })
     })
+    
+    this.fetchNotifications();
+
+    this.socket.on('new_notification', (data) => {        
+      this.fetchNotifications()
+    });
   },
   updated () {    
     this.currentPage = this.$router.currentRoute.name
     this.currentPath = this.$router.currentRoute.path
   },
   methods: {
+    fetchNotifications() {      
+      this.$store.dispatch('notifications/fetch').then((payload)=>{
+        console.log('App.vue; notifications/fetch(); ',payload)
+        this.notifications = payload.data
+        // this.$store.commit('notifications/set', payload.data)  
+      })
+    },
+    notificationViewed(notification) {
+
+    },
     welcome () {
       this.alert.text = `Welcome back ${this.currentUser}`
       this.alert.type = 'success'
@@ -151,7 +188,13 @@ export default {
     }
   },
   computed: {
-     loading() {      
+    nNotifications () {
+      return this.notifications.length
+    },
+    // notifications () {
+    //   return this.$store.getters['notifications/items']
+    // },
+    loading() {      
       return this.$store.getters['app/loading']
     },
     userAuth () {
