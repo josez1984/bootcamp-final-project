@@ -11,6 +11,13 @@ module.exports = function(sequelize, DataTypes) {
     status: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    itemId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Items",
+        key: "id"
+      }
     }
   });
 

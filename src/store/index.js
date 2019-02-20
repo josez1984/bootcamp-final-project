@@ -9,6 +9,7 @@ import alert from './modules/alert'
 import snackBar from './modules/snackBar'
 import app from './modules/app'
 import offers from './modules/offers'
+import notifications from './modules/notifications'
 
 // import createLogger from '../../../src/plugins/logger'
 
@@ -26,7 +27,8 @@ export default new Vuex.Store({
     user,
     items,
     alert,
-    snackBar
+    snackBar,
+    notifications
   }
   // strict: debug,
   // plugins: debug ? [createLogger()] : []

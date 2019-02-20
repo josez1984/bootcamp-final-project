@@ -44,14 +44,12 @@ module.exports = {
       console.log(err)
     })     
   },
-  fetch: (httpReq, httpRes)=>{
-    console.log(httpReq.query)
+  fetch: (httpReq, httpRes)=>{    
     let where = {
       UserId: httpReq.user.id,
       deleted: false,
       ...httpReq.query
-    }
-    console.log(where)
+    }    
     return db.Items.findAll({
       where,
       include: [{

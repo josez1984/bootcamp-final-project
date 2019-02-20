@@ -216,7 +216,13 @@ export default {
       this.item = {}
       this.id = 0
       this.name = ''
-      this.description = ''         
+      this.description = '' 
+      this.statusItems = [
+        'Active',
+        'Inactive'      
+      ]  
+      this.status = 'Active' 
+      this.statusSelectDisable = false     
     }
   }
 }

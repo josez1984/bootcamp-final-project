@@ -37,3 +37,4 @@ app.use(bodyParser.json({limit: '100mb'}));
 require("./routes/api/users.js")(app, pgPool);
 require("./routes/api/items.js")(app, io);
 require("./routes/api/offers.js")(app, io);
+require("./routes/api/notifications.js")(app, io);

@@ -61,13 +61,11 @@ module.exports = function(pgPool) {
                     return res.status(400).json({ error: "Wrong Password." });
                 }
 
-                const token = helper.generateToken(sqlRes.dataValues.id);                    
-                console.log(token)
-                res.cookie('key', token, { maxAge: 900000, httpOnly: true });
-                console.log('Authentication', token)
+                const token = helper.generateToken(sqlRes.dataValues.id);                                    
+                res.cookie('key', token, { maxAge: 900000, httpOnly: true });                
                 return res.status(200).json({ 
                     token: token, 
-                    userData: {
+                    user: {
                         email: sqlRes.dataValues.email
                     } 
                 });

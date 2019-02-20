@@ -12,6 +12,16 @@ const getters = {
 
 // actions
 const actions = {
+  accept({commit}, payload) {
+    return new Promise((resolve, reject)=>{
+      axios.post('/api/offers/accept', payload)
+      .then(res => {
+        resolve(res)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  },
   delete({commit}, payload) {
     return new Promise((resolve, reject)=>{
       axios.delete('/api/items', { data: payload })
