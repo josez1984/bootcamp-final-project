@@ -28,7 +28,9 @@ app.use(cookieParser());
 app.use(cookieCreate);
 
 app.use(express.static("public"));
-app.use(express.static(__dirname + "/vue/dist"));
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static(__dirname + "/dist"));
+}
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(bodyParser.json({limit: '100mb'}));
 
@@ -38,3 +40,7 @@ require("./routes/api/users.js")(app, pgPool);
 require("./routes/api/items.js")(app, io);
 require("./routes/api/offers.js")(app, io);
 require("./routes/api/notifications.js")(app, io);
+
+app.get('*', (request, response) => {
+	response.sendFile(path.join(__dirname, '/dist', 'index.html'));
+});
