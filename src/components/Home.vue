@@ -1,8 +1,6 @@
 <template>
   <div>
-    <img src="../assets/logo.png">        
-    <h1>Trademe</h1>    
-    <p>Welcome {{currentUser}}</p>    
+    <img src="../assets/29d72517-1ec7-46cf-909d-7a320748706b.png">                    
   </div>
 </template>
 

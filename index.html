@@ -13,13 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 
   </head>
-  <body>
-      <script>
-          var socket = io( {path: '/api/socket.io'});
-          setInterval(function(){
-            socket.emit('connect_response', {});
-          }, 60000);
-        </script>
+  <body>      
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
